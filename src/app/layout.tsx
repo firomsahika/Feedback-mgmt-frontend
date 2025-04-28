@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google"; // Import Poppins here
 import "./globals.css";
 import Header from "@/components/Header";
-import  {SideBar}  from "@/components/SideBar";
+import { SideBar } from "@/components/SideBar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+
+// Load fonts
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,19 +34,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased`}
       >
-        <SidebarProvider className="flex flex-col h-screen bg-[E6E6E6]">
-          {/* Top Header */}
+        <SidebarProvider className="flex flex-col h-screen ">
+
           <Header />
 
-          {/* Sidebar + Main content */}
-          <div className="z-0 flex h-[calc(100vh-4rem)]"> {/* 4rem = 64px (h-16) */}
-            {/* Sidebar */}
+          <div className="z-0 flex h-[calc(100vh-4rem)]">
+
             <SideBar />
 
-            {/* Main Content */}
-            <main className="bg-white w-full flex-1 p-6 overflow-y-auto ">
+            <main className="bg-white w-full flex-1 p-6 overflow-y-auto">
               {children}
             </main>
           </div>
