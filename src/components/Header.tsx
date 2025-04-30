@@ -12,9 +12,9 @@ import { Home, Info, Phone, UserPlus, LogIn } from "lucide-react";
 
 const Header = () => {
   return (
-    <header className="z-10 flex items-center w-full justify-between px-6 h-[4rem] text-slate-800 shadow-md">
+    <header className="z-10 bg-slate-800 flex items-center w-full justify-between px-6 h-[4rem] text-white shadow-md">
       {/* Logo */}
-      <div className="text-md font-bold">Student Feedback</div>
+      <div className="text-md font-bold ">Feedback.io</div>
 
       {/* Navigation Links */}
       <nav className="flex space-x-6 items-center text-sm font-semibold">

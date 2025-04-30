@@ -3,34 +3,41 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, PenSquare, FileText, Bell, User } from "lucide-react";
+import { LayoutDashboard , BookOpen , FileText, SlidersHorizontal ,Bell, Inbox  } from "lucide-react";
+
 
 const items = [
   {
-    title: "Home",
-    url: "/dashboard/student",
-    icon: Home,
+    title: "Dashboard",
+    url: "/dashboard/admin",
+    icon: LayoutDashboard , // Correctly imported and used
   },
   {
-    title: "Submit Feedback",
-    url: "/dashboard/student/submit-feedback",
-    icon: PenSquare,
+    title: "Classes",
+    url: "/dashboard/admin/classes",
+    icon: BookOpen , // Correctly imported and used
   },
   {
-    title: "View My Feedback",
-    url: "/dashboard/student/view-feedback",
-    icon: FileText,
+    title: "Subjects",
+    url: "/dashboard/admin/subjects",
+    icon: FileText, // Correctly imported and used
   },
   {
-    title: "Notifications",
-    url: "/dashboard/student/notifications",
-    icon: Bell,
+    title: "Parameters",
+    url: "/dashboard/admin/parameters",
+    icon: SlidersHorizontal , // Correctly imported and used
     badge: 2, // static count
   },
   {
-    title: "Profile",
-    url: "/dashboard/student/profile",
-    icon: User,
+    title: "Feedback",
+    url: "/dashboard/admin/feedbacks",
+    icon: Bell , // Correctly imported and used
+    badge: 2, // static count
+  },
+  {
+    title: "Submission Buffer",
+    url: "/dashboard/admin/submission-buffer",
+    icon: Inbox , // Correctly imported and used
   },
 ];
 
@@ -38,7 +45,7 @@ export function SideBar() {
   const pathname = usePathname();
 
   return (
-    <aside className="h-full w-64 bg-[#E6E6E6] border-r shadow-sm">
+    <aside className="h-full w-64 bg-slate-700 border-r shadow-sm  pt-5">
       <nav className="flex flex-col p-4 space-y-1">
         {items.map((item, index) => {
           const isActive = pathname === item.url;
@@ -49,13 +56,13 @@ export function SideBar() {
               href={item.url}
               className={`relative flex items-center space-x-3 p-2 rounded-md transition-colors ${
                 isActive
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-gray-100 text-gray-800"
+                  ? "bg-blue-600 text-white shadow-2xl"
+                  : "hover:bg-slate-800 text-white"
               }`}
             >
               <div className="relative">
                 <item.icon
-                  className={`h-4 w-4 ${isActive ? "text-white" : "text-gray-700"}`}
+                  className={`h-4 w-4 ${isActive ? "text-white" : "text-gray-100"}`}
                 />
                 {item.title === "Notifications" && item.badge && (
                   <span className="absolute -top-2 -right-2 inline-flex items-center justify-center text-xs font-bold bg-red-500 text-white rounded-full h-4 w-4">
