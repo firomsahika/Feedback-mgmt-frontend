@@ -4,62 +4,62 @@ import { useState } from "react";
 import { Trash2 } from "lucide-react";
 
 const AddSubject = () => {
-  const [subjectName, setSubjectName] = useState("");
-  const [subjectCode, setSubjectCode] = useState("");
+  const [courseName, setCourseName] = useState("");
+  const [courseCode, setCourseCode] = useState("");
   const [teacherName, setTeacherName] = useState("");
   const [className, setClassName] = useState("");
-  const [subjectType, setSubjectType] = useState("");
+  const [courseType, setCourseType] = useState("");
 
-  const [subjects, setSubjects] = useState([
+  const [courses, setCourses] = useState([
     {
       id: 1,
       className: "CSE-1",
-      subjectName: "Special Topics",
-      subjectCode: "CSEG 4206",
-      subjectType: "Tutorial",
+      courseName: "Special Topics",
+      courseCode: "CSEG 4206",
+      courseType: "Tutorial",
       teacherName: "Ajay Randhawa",
     },
     {
       id: 2,
       className: "CSE-2",
-      subjectName: "Machine Learning",
-      subjectCode: "CSEG 4203",
-      subjectType: "LAB",
+      courseName: "Machine Learning",
+      courseCode: "CSEG 4203",
+      courseType: "LAB",
       teacherName: "Ajay Randhawa",
     },
   ]);
 
   const handleAdd = () => {
-    if (!className || !subjectName || !subjectCode || !subjectType || !teacherName) return;
+    if (!className || !courseName || !courseCode || !courseType || !teacherName) return;
 
-    setSubjects([
-      ...subjects,
+    setCourses([
+      ...courses,
       {
-        id: subjects.length + 1,
+        id: courses.length + 1,
         className,
-        subjectName,
-        subjectCode,
-        subjectType,
+        courseName,
+        courseCode,
+        courseType,
         teacherName,
       },
     ]);
 
     setClassName("");
-    setSubjectName("");
-    setSubjectCode("");
-    setSubjectType("");
+    setCourseName("");
+    setCourseCode("");
+    setCourseType("");
     setTeacherName("");
   };
 
   const handleDelete = (id: number) => {
-    setSubjects(subjects.filter((s) => s.id !== id));
+    setCourses(courses.filter((s) => s.id !== id));
   };
 
   return (
     <div className="p-6 bg-white rounded-xl border shadow-sm space-y-6">
       {/* ADD SUBJECT */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">ADD SUBJECT</h2>
+        <h2 className="text-lg font-semibold mb-4">ADD COURSE</h2>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="col-span-1">
             <label className="block text-sm font-medium mb-1">Class Name</label>
@@ -74,11 +74,11 @@ const AddSubject = () => {
             </select>
           </div>
           <div className="col-span-1">
-            <label className="block text-sm font-medium mb-1">Subject Type</label>
+            <label className="block text-sm font-medium mb-1">Course Type</label>
             <select
               className="w-full border px-3 py-2 rounded-md"
-              value={subjectType}
-              onChange={(e) => setSubjectType(e.target.value)}
+              value={courseType}
+              onChange={(e) => setCourseType(e.target.value)}
             >
               <option value="">Select</option>
               <option value="Theory">Theory</option>
@@ -86,21 +86,21 @@ const AddSubject = () => {
             </select>
           </div>
           <div className="col-span-1">
-            <label className="block text-sm font-medium mb-1">Subject Code</label>
+            <label className="block text-sm font-medium mb-1">Course Code</label>
             <input
               type="text"
               className="w-full border px-3 py-2 rounded-md"
-              value={subjectCode}
-              onChange={(e) => setSubjectCode(e.target.value)}
+              value={courseCode}
+              onChange={(e) => setCourseCode(e.target.value)}
             />
           </div>
           <div className="col-span-1">
-            <label className="block text-sm font-medium mb-1">Subject Name</label>
+            <label className="block text-sm font-medium mb-1">Course Name</label>
             <input
               type="text"
               className="w-full border px-3 py-2 rounded-md"
-              value={subjectName}
-              onChange={(e) => setSubjectName(e.target.value)}
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
             />
           </div>
           <div className="col-span-1">
@@ -123,28 +123,28 @@ const AddSubject = () => {
 
       {/* SUBJECTS INFO TABLE */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">SUBJECTS INFO</h2>
+        <h2 className="text-lg font-semibold mb-4">COURSES INFO</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm border border-gray-200">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
                 <th className="px-4 py-2 border">#</th>
                 <th className="px-4 py-2 border">Class</th>
-                <th className="px-4 py-2 border">Subject Name</th>
-                <th className="px-4 py-2 border">Subject Code</th>
+                <th className="px-4 py-2 border">Course Name</th>
+                <th className="px-4 py-2 border">Course Code</th>
                 <th className="px-4 py-2 border">Type</th>
                 <th className="px-4 py-2 border">Teacher Name</th>
                 <th className="px-4 py-2 border">Action</th>
               </tr>
             </thead>
             <tbody>
-              {subjects.map((subj, index) => (
+              {courses.map((subj, index) => (
                 <tr key={subj.id} className="text-center">
                   <td className="px-4 py-2 border">{index + 1}</td>
                   <td className="px-4 py-2 border">{subj.className}</td>
-                  <td className="px-4 py-2 border">{subj.subjectName}</td>
-                  <td className="px-4 py-2 border">{subj.subjectCode}</td>
-                  <td className="px-4 py-2 border">{subj.subjectType}</td>
+                  <td className="px-4 py-2 border">{subj.courseName}</td>
+                  <td className="px-4 py-2 border">{subj.courseCode}</td>
+                  <td className="px-4 py-2 border">{subj.courseType}</td>
                   <td className="px-4 py-2 border">{subj.teacherName}</td>
                   <td className="px-4 py-2 border">
                     <button
@@ -156,10 +156,10 @@ const AddSubject = () => {
                   </td>
                 </tr>
               ))}
-              {subjects.length === 0 && (
+              {courses.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-4 text-center text-gray-500">
-                    No subjects added yet.
+                    No courses added yet.
                   </td>
                 </tr>
               )}

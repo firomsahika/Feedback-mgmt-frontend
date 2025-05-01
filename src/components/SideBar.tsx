@@ -30,7 +30,7 @@ const items = [
   },
   {
     title: "Feedback",
-    url: "/dashboard/admin/feedbacks",
+    url: "/dashboard/admin/feedback",
     icon: Bell , // Correctly imported and used
     badge: 2, // static count
   },
@@ -56,7 +56,7 @@ export function SideBar() {
               href={item.url}
               className={`relative flex items-center space-x-3 p-2 rounded-md transition-colors ${
                 isActive
-                  ? "bg-blue-600 text-white shadow-2xl"
+                  ? "bg-cyan-500 text-white shadow-2xl"
                   : "hover:bg-slate-800 text-white"
               }`}
             >
