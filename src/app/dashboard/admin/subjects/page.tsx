@@ -1,59 +1,76 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
+import axios from 'axios'
+
 
 const AddSubject = () => {
   const [courseName, setCourseName] = useState("");
   const [courseCode, setCourseCode] = useState("");
   const [teacherName, setTeacherName] = useState("");
-  const [className, setClassName] = useState("");
   const [courseType, setCourseType] = useState("");
 
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      className: "CSE-1",
-      courseName: "Special Topics",
-      courseCode: "CSEG 4206",
-      courseType: "Tutorial",
-      teacherName: "Ajay Randhawa",
-    },
-    {
-      id: 2,
-      className: "CSE-2",
-      courseName: "Machine Learning",
-      courseCode: "CSEG 4203",
-      courseType: "LAB",
-      teacherName: "Ajay Randhawa",
-    },
-  ]);
 
-  const handleAdd = () => {
-    if (!className || !courseName || !courseCode || !courseType || !teacherName) return;
+interface Course {
+  id: string;
+  courseName: string;
+  courseCode: string;
+  courseType: string;
+  teacherName: string;
+}
 
-    setCourses([
-      ...courses,
-      {
-        id: courses.length + 1,
-        className,
-        courseName,
-        courseCode,
-        courseType,
-        teacherName,
-      },
-    ]);
+  const [courses, setCourses] = useState<Course[]>([]);
 
-    setClassName("");
-    setCourseName("");
-    setCourseCode("");
-    setCourseType("");
-    setTeacherName("");
+  useEffect(() =>{
+    const fetchCourses = async()=>{
+      try {
+        const response = await axios.get("http://localhost:5000/api/courses/all");
+        setCourses(response.data)
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    }
+
+    fetchCourses();
+    },[])
+
+  const handleCreateCourse = async() => {
+    if ( !courseName || !courseCode || !courseType || !teacherName) return;
+
+    const newCourse = {
+      courseName,
+      courseCode,
+      courseType,
+      teacherName,
+    };
+    
+    try {
+      const response = await axios.post("http://localhost:5000/api/courses/create", newCourse);
+
+      const createdCourse= response.data.course;
+
+      console.log(createdCourse);
+
+      setCourses([...courses, createdCourse])
+
+      setCourseName("");
+      setCourseCode("");
+      setCourseType("");
+      setTeacherName("");
+
+    } catch (error) {
+      console.error("❌ Axios error adding course:", error);
+    }
+
   };
 
-  const handleDelete = (id: number) => {
+
+  const handleDelete = (id: string) => {
     setCourses(courses.filter((s) => s.id !== id));
   };
+
+
 
   return (
     <div className="p-6 bg-white rounded-xl border shadow-sm space-y-6">
@@ -61,7 +78,7 @@ const AddSubject = () => {
       <div>
         <h2 className="text-lg font-semibold mb-4">ADD COURSE</h2>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="col-span-1">
+          {/* <div className="col-span-1">
             <label className="block text-sm font-medium mb-1">Class Name</label>
             <select
               className="w-full border px-3 py-2 rounded-md"
@@ -72,7 +89,7 @@ const AddSubject = () => {
               <option value="IT-6-Sem">IT-6-Sem</option>
               <option value="CSE-5-Sem">CSE-5-Sem</option>
             </select>
-          </div>
+          </div> */}
           <div className="col-span-1">
             <label className="block text-sm font-medium mb-1">Course Type</label>
             <select
@@ -81,8 +98,9 @@ const AddSubject = () => {
               onChange={(e) => setCourseType(e.target.value)}
             >
               <option value="">Select</option>
-              <option value="Theory">Theory</option>
-              <option value="LAB">LAB</option>
+              <option value="Lecture">Lecture</option>
+              <option value="Tutorial">Tutorial</option>
+              <option value="Lab">LAB</option>
             </select>
           </div>
           <div className="col-span-1">
@@ -114,7 +132,7 @@ const AddSubject = () => {
           </div>
         </div>
         <button
-          onClick={handleAdd}
+          onClick={handleCreateCourse}
           className="mt-4 bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-800"
         >
           ADD
@@ -129,7 +147,6 @@ const AddSubject = () => {
             <thead className="bg-gray-100 text-gray-700">
               <tr>
                 <th className="px-4 py-2 border">#</th>
-                <th className="px-4 py-2 border">Class</th>
                 <th className="px-4 py-2 border">Course Name</th>
                 <th className="px-4 py-2 border">Course Code</th>
                 <th className="px-4 py-2 border">Type</th>
@@ -138,17 +155,16 @@ const AddSubject = () => {
               </tr>
             </thead>
             <tbody>
-              {courses.map((subj, index) => (
-                <tr key={subj.id} className="text-center">
+              {courses.map((course, index) => (
+                <tr key={course.id} className="text-center">
                   <td className="px-4 py-2 border">{index + 1}</td>
-                  <td className="px-4 py-2 border">{subj.className}</td>
-                  <td className="px-4 py-2 border">{subj.courseName}</td>
-                  <td className="px-4 py-2 border">{subj.courseCode}</td>
-                  <td className="px-4 py-2 border">{subj.courseType}</td>
-                  <td className="px-4 py-2 border">{subj.teacherName}</td>
+                  <td className="px-4 py-2 border">{course.courseName}</td>
+                  <td className="px-4 py-2 border">{course.courseCode}</td>
+                  <td className="px-4 py-2 border">{course.courseType}</td>
+                  <td className="px-4 py-2 border">{course.teacherName}</td>
                   <td className="px-4 py-2 border">
                     <button
-                      onClick={() => handleDelete(subj.id)}
+                      onClick={() => handleDelete(course.id)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <Trash2 className="w-4 h-4" />
