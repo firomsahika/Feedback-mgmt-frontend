@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google"; // Import Poppins here
-
+import { SideBar } from "@/components/SideBar";
 // Load fonts
 const poppins = Poppins({
   subsets: ["latin"],
@@ -35,6 +35,7 @@ export default function RootLayout({
 
           <div className="z-0 flex h-[calc(100vh-4rem)]">
 
+          <SideBar />
             <main className="bg-white w-full flex-1 p-6 overflow-y-auto">
               {children}
             </main>

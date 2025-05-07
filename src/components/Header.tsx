@@ -53,9 +53,12 @@ const Header = () => {
             Login
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>Student</DropdownMenuItem>
-            <DropdownMenuItem>Department</DropdownMenuItem>
-            <DropdownMenuItem>Faculty</DropdownMenuItem>
+            <DropdownMenuItem>
+              <a href="http://localhost:3000/auth/login/student">Student</a>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <a href="http://localhost:3000/auth/login/admin">Admin</a>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

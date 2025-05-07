@@ -36,15 +36,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased`}
       >
-        <SidebarProvider className="flex flex-col h-screen ">
+        <SidebarProvider className="flex flex-col ">
 
           <Header />
 
           <div className="z-0 flex h-[calc(100vh-4rem)]">
 
-            <SideBar />
-
-            <main className="bg-white w-full flex-1 p-6 overflow-y-auto">
+            <main className="bg-white w-full flex-1 p-6 ">
               {children}
             </main>
           </div>
