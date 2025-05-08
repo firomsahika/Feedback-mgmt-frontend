@@ -12,7 +12,7 @@ import { Home, Info, Phone, UserPlus, LogIn } from "lucide-react";
 
 const Header = () => {
   return (
-    <header className="z-10 bg-slate-800 flex items-center w-full justify-between px-6 h-[4rem] text-white shadow-md">
+    <header className="z-10 bg-cyan-800 flex items-center w-full justify-between px-6 h-[4rem] text-white shadow-md">
       {/* Logo */}
       <div className="text-md font-bold ">Feedback.io</div>
 

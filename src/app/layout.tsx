@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poppins } from "next/font/google"; // Import Poppins here
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { SideBar } from "@/components/SideBar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { UserProvider } from "@/context/userContext";
 
 // Load fonts
 const poppins = Poppins({
@@ -41,10 +42,12 @@ export default function RootLayout({
           <Header />
 
           <div className="z-0 flex h-[calc(100vh-4rem)]">
-
+  
+           <UserProvider>
             <main className="bg-white w-full flex-1 p-6 ">
               {children}
             </main>
+            </UserProvider>
           </div>
         </SidebarProvider>
       </body>

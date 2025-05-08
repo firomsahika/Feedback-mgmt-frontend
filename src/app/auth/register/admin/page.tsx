@@ -1,8 +1,10 @@
+"use client"
+
 import React from 'react'
 
 import { MessageCircleHeart, LockIcon } from 'lucide-react'
 
-const page = () => {
+const Page = () => {
   return (
     <div className='w-full max-h-screen flex items-center justify-center '>
       <div className='flex flex-col gap-5 max-w-5xl shadow-2xl p-16 rounded-md'>
@@ -24,4 +26,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

@@ -3,46 +3,32 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard , BookOpen , FileText, SlidersHorizontal ,Bell, Inbox  } from "lucide-react";
+import { useUser } from "@/context/userContext";
+import { LayoutDashboard , BookOpen , FileText, SlidersHorizontal ,Bell, Inbox, User, MessageCircle  } from "lucide-react";
 
 
-const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard/admin",
-    icon: LayoutDashboard , // Correctly imported and used
-  },
-  {
-    title: "Classes",
-    url: "/dashboard/admin/classes",
-    icon: BookOpen , // Correctly imported and used
-  },
-  {
-    title: "Subjects",
-    url: "/dashboard/admin/subjects",
-    icon: FileText, // Correctly imported and used
-  },
-  {
-    title: "Parameters",
-    url: "/dashboard/admin/parameters",
-    icon: SlidersHorizontal , // Correctly imported and used
-    badge: 2, // static count
-  },
-  {
-    title: "Feedback",
-    url: "/dashboard/admin/feedback",
-    icon: Bell , // Correctly imported and used
-    badge: 2, // static count
-  },
-  {
-    title: "Submission Buffer",
-    url: "/dashboard/admin/submission-buffer",
-    icon: Inbox , // Correctly imported and used
-  },
+// Admin routes
+const adminItems = [
+  { title: "Dashboard", url: "/dashboard/admin", icon: LayoutDashboard },
+  { title: "Classes", url: "/dashboard/admin/classes", icon: BookOpen },
+  { title: "Subjects", url: "/dashboard/admin/subjects", icon: FileText },
+  { title: "Parameters", url: "/dashboard/admin/parameters", icon: SlidersHorizontal, badge: 2 },
+  { title: "Feedback", url: "/dashboard/admin/feedback", icon: Bell, badge: 2 },
+  { title: "Submission Buffer", url: "/dashboard/admin/submission-buffer", icon: Inbox },
+];
+
+// Student routes
+const studentItems = [
+  { title: "Dashboard", url: "/dashboard/student", icon: LayoutDashboard },
+  { title: "Profile", url: "/dashboard/student/profile", icon: User },
+  { title: "View Feedback", url: "/dashboard/student/feedback", icon: MessageCircle },
 ];
 
 export function SideBar() {
   const pathname = usePathname();
+  const {user} = useUser()
+
+  const items = user?.role === "admin" ? adminItems : studentItems;
 
   return (
     <aside className="h-full w-64 bg-slate-700 border-r shadow-sm  pt-5">
