@@ -1,12 +1,11 @@
+
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
-import { SideBar } from "@/components/SideBar";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { UserProvider } from "@/context/userContext";
+import ClientProviders from "@/components/clientProviders"; 
 
-// Load fonts
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
@@ -29,27 +28,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased`}
       >
-        <SidebarProvider className="flex flex-col ">
-
+        <ClientProviders>
           <Header />
-
           <div className="z-0 flex h-[calc(100vh-4rem)]">
-  
-           <UserProvider>
-            <main className="bg-white w-full flex-1 p-6 ">
+            <main className="bg-white w-full flex-1 p-6">
               {children}
             </main>
-            </UserProvider>
           </div>
-        </SidebarProvider>
+        </ClientProviders>
       </body>
     </html>
   );

@@ -1,8 +1,13 @@
 "use client"
 
+import axios from 'axios'
 import React, {useState} from 'react'
+import { useUser } from '@/context/userContext'
 
 const Page = () => {
+
+  const {login} = useUser();
+
  const [formData, setFormData] = useState({
       email:'',
       password:''
@@ -14,8 +19,25 @@ const Page = () => {
     
       const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Connect to backend here
-        // console.log('Registering:', formData)
+        
+        try {
+          const response = await axios.post("http://localhost:5000/api/user/login",{
+            email:formData.email,
+            password:formData.password
+          })
+
+          const userData = response.data;
+
+          const user = userData.existingUser;
+
+          if(user?.email && user?.role){
+            login(user);
+          }
+
+        } catch (error:any) {
+          console.error("Login failed:", error?.response?.data?.message || error.message);
+          alert("Login failed: " + (error?.response?.data?.message || "Something went wrong."));
+        }
       }
 
   return (
@@ -27,6 +49,7 @@ const Page = () => {
          <label htmlFor="" className='text-md'>Email</label>
          <input 
          type="email" 
+         name='email'
          placeholder='email' 
          value={formData.email}
          onChange={handleChange}
@@ -38,6 +61,7 @@ const Page = () => {
          <label htmlFor="">Password</label>
          <input 
          type="password"
+         name='password'
           placeholder='password' 
           value={formData.password}
           onChange={handleChange}

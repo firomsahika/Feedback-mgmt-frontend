@@ -50,11 +50,11 @@ export function SideBar() {
                 <item.icon
                   className={`h-4 w-4 ${isActive ? "text-white" : "text-gray-100"}`}
                 />
-                {item.title === "Notifications" && item.badge && (
+                {/* {item.title === "Notifications" && item.badge && (
                   <span className="absolute -top-2 -right-2 inline-flex items-center justify-center text-xs font-bold bg-red-500 text-white rounded-full h-4 w-4">
                     {item.badge}
                   </span>
-                )}
+                )} */}
               </div>
               <span className="text-sm">{item.title}</span>
             </Link>

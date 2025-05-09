@@ -1,4 +1,3 @@
-// context/UserContext.tsx
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -6,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 interface User {
   email: string;
+  name:  string;
   role: "student" | "admin"; 
 }
 
@@ -32,7 +32,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
 
-    // Redirect based on role
     if (userData.role === "student") {
       router.push("/dashboard/student");
     } else if (userData.role === "admin") {
