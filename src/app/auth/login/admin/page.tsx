@@ -28,7 +28,10 @@ const Page = () => {
 
           const userData = response.data;
 
+          console.log(userData);
           const user = userData.existingUser;
+
+          localStorage.setItem("token", userData.token);
 
           if(user?.email && user?.role){
             login(user);

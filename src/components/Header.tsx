@@ -15,7 +15,7 @@ const Header = () => {
   const { user, logout } = useUser();
 
   return (
-    <header className="z-10 bg-cyan-800 flex items-center w-full justify-between px-6 h-[4rem] text-white shadow-md">
+    <header className="z-10 bg-teal-600 flex items-center w-full justify-between px-6 h-[4rem] text-white shadow-md">
       {/* Logo or User Info */}
       <div className="text-md font-bold">
         {user ? user.email : "Feedback.io"}

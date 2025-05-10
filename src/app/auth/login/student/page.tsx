@@ -1,7 +1,7 @@
     "use client"
 
-    import React, {useState} from 'react'
-    import { useUser } from '@/context/userContext'
+  import React, {useState} from 'react'
+  import { useUser } from '@/context/userContext'
   import axios from 'axios';
 
     const Page = () => {

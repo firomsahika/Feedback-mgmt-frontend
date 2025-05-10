@@ -1,88 +1,128 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
+import axios from "axios";
+import { headers } from "next/headers";
+
+interface Parameter {
+  id: number;
+  parameterName: string;
+  parameterType: string;
+  courseName: string;
+  teacherName: string;
+}
 
 const AddSubject = () => {
-  const [parameterName, setParameterName] = useState("");
-  const [parameterType, setParameterType] = useState("");
+  const [formData, setFormData] = useState({
+    parameterName: "",
+    parameterType: "",
+    courseName: "",
+    teacherName: "",
+  });
 
+  const [parameters, setParameters] = useState<Parameter[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const [parameters, setParameters] = useState([
-    {
-      id: 1,
-      parameterName: "E-lecture",
-      parameterType: "Lecture",
-    },
-    {
-      id: 2,
-      parameterName: "Teaching well",
-      parameterType: "Tutorial",
-    },
-    {
-        id: 2,
-        parameterName: "Practice",
-        parameterType: "LAB",
-      },
-  ]);
+  // Fetch parameters on mount
+  useEffect(() => {
+    const fetchParameters = async () =>{
+      try {
+        const response = await axios.get("http://localhost:5000/api/feedback/parameters");
+        const data = response.data;
 
-  const handleAdd = () => {
-    if (!parameterName || !parameterType ) return;
+        setParameters(data);
 
-    setParameters([
-      ...parameters,
-      {
-        id: parameters.length + 1,
-        parameterName,
-        parameterType,
-      },
-    ]);
+      } catch (error) {
+        console.error("Failed to fetch parameters", error);
+      }
+    }
+    fetchParameters();
+  }, []);
 
-    setParameterName("");
-    setParameterType("");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleDelete = (id: number) => {
-    setParameters(parameters.filter((s) => s.id !== id));
+
+  const handleAdd = async () => {
+    try {
+      setLoading(true);
+
+       const token = localStorage.getItem("token");
+
+      const res = await axios.post("http://localhost:5000/api/feedback/create-parameter", {
+         parameterName: formData.parameterName,
+         parameterType: formData.parameterType,
+         courseName: formData.courseName,
+         teacherName:formData.teacherName,
+      }, 
+      {
+        headers:{
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    
+    );
+
+      const newParam = res.data;
+      console.log(newParam);
+      if(!newParam){
+        console.error("Invalid user Data recieved from server!")
+      }
+      setParameters((prev) => [...prev, newParam]);
+
+      // Clear form
+      setFormData({
+        parameterName: "",
+        parameterType: "",
+        courseName: "",
+        teacherName: "",
+      });
+    } catch (error) {
+      console.error("Error adding parameter:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    // Optional: send DELETE request to backend if supported
+    setParameters(parameters.filter((param) => param.id !== id));
   };
 
   return (
     <div className="p-6 bg-white rounded-xl border shadow-sm space-y-6">
-      {/* ADD SUBJECT */}
+      {/* FORM */}
       <div>
         <h2 className="text-lg font-semibold mb-4">ADD PARAMETERS</h2>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-         
-          
-          <div className="col-span-1">
-            <label className="block text-sm font-medium mb-1">Parameter Name</label>
-            <input
-              type="text"
-              className="w-full border px-3 py-2 rounded-md"
-              value={parameterName}
-              onChange={(e) => setParameterName(e.target.value)}
-            />
-          </div>
-          <div className="col-span-1">
-            <label className="block text-sm font-medium mb-1">Parameter Type</label>
-            <input
-              type="text"
-              className="w-full border px-3 py-2 rounded-md"
-              value={parameterType}
-              onChange={(e) => setParameterType(e.target.value)}
-            />
-          </div>
-        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {["parameterName", "parameterType", "courseName", "teacherName"].map((field) => (
+            <div key={field}>
+              <label className="block text-sm font-medium mb-1 capitalize">
+                {field.replace(/([A-Z])/g, " $1")}
+              </label>
+              <input
+                type="text"
+                name={field}
+                className="w-full border px-3 py-2 rounded-md"
+                value={(formData as any)[field]}
+                onChange={handleChange}
+              />
+            </div>
+          ))}
         </div>
         <button
           onClick={handleAdd}
-          className="mt-4 bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-800"
+          className="mt-4 bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-800 disabled:opacity-50"
+          disabled={loading}
         >
-          ADD
+          {loading ? "Adding..." : "ADD"}
         </button>
       </div>
 
-      {/* SUBJECTS INFO TABLE */}
+      {/* TABLE */}
       <div>
         <h2 className="text-lg font-semibold mb-4">SUBJECTS INFO</h2>
         <div className="overflow-x-auto">
@@ -92,6 +132,8 @@ const AddSubject = () => {
                 <th className="px-4 py-2 border">#</th>
                 <th className="px-4 py-2 border">Parameter Name</th>
                 <th className="px-4 py-2 border">Parameter Type</th>
+                <th className="px-4 py-2 border">Course Name</th>
+                <th className="px-4 py-2 border">Teacher Name</th>
                 <th className="px-4 py-2 border">Action</th>
               </tr>
             </thead>
@@ -101,7 +143,8 @@ const AddSubject = () => {
                   <td className="px-4 py-2 border">{index + 1}</td>
                   <td className="px-4 py-2 border">{param.parameterName}</td>
                   <td className="px-4 py-2 border">{param.parameterType}</td>
-                 
+                  <td className="px-4 py-2 border">{param.courseName}</td>
+                  <td className="px-4 py-2 border">{param.teacherName}</td>
                   <td className="px-4 py-2 border">
                     <button
                       onClick={() => handleDelete(param.id)}
@@ -114,7 +157,7 @@ const AddSubject = () => {
               ))}
               {parameters.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-4 text-center text-gray-500">
+                  <td colSpan={6} className="py-4 text-center text-gray-500">
                     No Parameters added yet.
                   </td>
                 </tr>

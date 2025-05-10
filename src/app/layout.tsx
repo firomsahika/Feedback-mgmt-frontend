@@ -5,6 +5,7 @@ import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import ClientProviders from "@/components/clientProviders"; 
+import { Toaster } from "sonner";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -34,15 +35,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased `}
       >
-        <ClientProviders>
-          <Header />
-          <div className="z-0 flex h-[calc(100vh-4rem)]">
-            <main className="bg-white w-full flex-1 p-6">
+        <ClientProviders >
+         <div className="flex flex-col w-full ">
+           <Header />
+          <div className="z-0 flex  h-[calc(100vh-4rem)]">
+            <main className="bg-white w-full flex-1 ">
               {children}
+              <Toaster />
             </main>
           </div>
+         </div>
         </ClientProviders>
       </body>
     </html>

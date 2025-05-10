@@ -42,7 +42,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);
-    router.push("/auth/login");
+    router.push("/");
   };
 
   return (
