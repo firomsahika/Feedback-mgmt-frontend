@@ -40,7 +40,7 @@ export default function RootLayout({
         <ClientProviders >
          <div className="flex flex-col w-full ">
            <Header />
-          <div className="z-0 flex  h-[calc(100vh-4rem)]">
+          <div className="z-0 flex   h-[calc(100vh-4rem)]">
             <main className="bg-white w-full flex-1 ">
               {children}
               <Toaster />

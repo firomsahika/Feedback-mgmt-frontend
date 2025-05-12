@@ -36,7 +36,7 @@ export default function RootLayout({
           <div className="z-0 flex h-[calc(100vh-4rem)] ">
 
             <SideBar />
-            <main className="bg-white w-full flex-1  overflow-y-auto">
+            <main className="bg-white w-full p-5 flex-1  overflow-y-auto">
               {children}
             </main>
           </div>

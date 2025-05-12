@@ -31,13 +31,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className=" bg-gray-50 py-12 px-10 sm:px-6">
+    <div className=" bg-gray-50  px-10 sm:px-6">
       <div className="max-w-4xl mx-auto">
         <Card className="border-none shadow-lg overflow-hidden">
-          <div className="h-20 bg-gradient-to-r from-teal-500 to-teal-600"></div>
+          <div className="h-20 bg-gradient-to-r from-teal-500 to-teal-600"></div>                                                       
 
           <div className="relative px-2">
-            <div className="absolute -top-16 flex justify-between items-end w-full">
+            <div className="absolute -top-20  flex justify-between items-end w-full">
               <div className="relative">
                 <Avatar className="h-32 w-32 border-4 border-white shadow-md">
                   <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
