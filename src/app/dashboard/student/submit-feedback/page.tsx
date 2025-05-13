@@ -64,13 +64,41 @@ export default function FeedbackPage() {
 
     const parameterId = currentParameter.id
 
+    console.log("Parameter ID: ", parameterId)
+
+      // 👉 Only submit if it's the last step
+      if (currentStep !== totalSteps - 1) {
+      nextStep()
+      return
+    }
+
     try {
-      await axios.post(`http://localhost:5000/api/feedback/submit-feedback/${parameterId}`, feedback)
+
+      const token = localStorage.getItem("token");
+
+      console.log("Token :", token)
+
+      const allFeedback = parameters.map((param) =>({
+        parameterId:param.id,
+        rating: Number(feedback[`param_${param.id}`]),
+        comment:feedback[`param_${param.id}_comment`]
+      }))
+
+      console.log("feedback", feedback)
+
+      const res = await axios.post(`http://localhost:5000/api/feedback/submit-feedback`, 
+         { feedback:allFeedback  }
+        , {
+        headers:{
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      })
       toast.success("Feedback submitted successfully!", {
         description: "Thank you for your valuable input.",
       })
 
-      console.log("Submitted feedback:", feedback)
+      console.log("Submitted feedaback:", res.data )
 
       if (currentStep === totalSteps - 1) {
         // After final step
