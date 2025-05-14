@@ -1,88 +1,83 @@
-// FeedbackPage.tsx
-import React from 'react';
-import {Eye, Mail} from "lucide-react"
+"use client"
 
+import { useEffect, useState } from "react"
+import { Card } from "@/components/ui/card"
+import axios from "axios"
 
+interface EnrichedFeedback {
+  id: string
+  parameterName: string
+  parameterType: string
+  courseName: string
+  teacherName: string
+  rating: number
+  comment?: string
+}
 
-const FeedbackPage = () => {
+export default function ViewFeedbackPage() {
+  const [feedbackData, setFeedbackData] = useState<EnrichedFeedback[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/feedback/all")
+        
+        const data = response.data
+
+        // Map the backend shape to frontend shape
+        const enriched = data.map((item: any) => ({
+          id: item.id,
+          parameterName: item.parameter?.parameterName || "N/A",
+          parameterType: item.parameter?.parameterType || "N/A",
+          courseName: item.parameter?.courseName || "N/A",
+          teacherName: item.parameter?.teacherName || "N/A",
+          rating: item.rating,
+          comment: item.comment || "",
+        }))
+
+        setFeedbackData(enriched)
+      } catch (error) {
+        console.error("❌ Error fetching feedbacks:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchFeedback()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto py-10 px-4 space-y-4">
+        <p className="text-gray-600 text-center">Loading feedback...</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-semibold">Manage Feedback</h1>
-        <div className="flex items-center">
-          <label htmlFor="showEntries" className="mr-2">
-            Show
-          </label>
-          <select
-            id="showEntries"
-            className="border rounded px-2 py-1"
-          >
-            <option>10</option>
-            <option>25</option>
-            <option>50</option>
-            <option>100</option>
-          </select>
-          <span className="ml-2">entries</span>
-        </div>
-        <div>
-          <label htmlFor="search" className="mr-2">
-            Search:
-          </label>
-          <input
-            type="text"
-            id="search"
-            className="border rounded px-2 py-1"
-          />
-        </div>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 text-left">#</th>
-              <th className="px-4 py-2 text-left">Classes</th>
-              <th className="px-4 py-2 text-left">View</th>
-              <th className="px-4 py-2 text-left">Clear Data</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="px-4 py-2">1</td>
-              <td className="px-4 py-2">IT-6-Sem</td>
-              <td className="px-4 py-2 flex items-center gap-x-2">
-                <a href="#" className="flex items-center justify-center text-cyan-400 hover:underline mr-2">
-                    <Eye className="w-5 h-5  mr-1" />
-                  View
-                </a>
-                <a href="#" className="flex items-center justify-center text-cyan-400 hover:underline">
-                    <Mail className="w-4 h-4  mr-1" />
-                  Message
-                </a>
-              </td>
-              <td className="px-4 py-2">
-                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
-                  Clear
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex items-center justify-between mt-4">
-        <div>Showing 1 to 1 of 1 entries</div>
-        <div>
-          <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded mr-2">
-            Previous
-          </button>
-          <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded">
-            Next
-          </button>
-        </div>
-      </div>
+    <div className="max-w-4xl mx-auto py-10 px-4">
+      <h1 className="text-3xl font-bold mb-6 text-center">View Submitted Feedback</h1>
+      {feedbackData.length === 0 ? (
+        <p className="text-center text-gray-500">No feedback found.</p>
+      ) : (
+        feedbackData.map((entry) => (
+          <Card key={entry.id} className="mb-4 p-4 border shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-800">{entry.parameterName}</h2>
+            <p className="text-sm text-gray-500">
+              Type: {entry.parameterType} | Course: {entry.courseName} | Teacher: {entry.teacherName}
+            </p>
+            <p className="mt-2">
+              <span className="font-semibold">Rating:</span> {entry.rating}/5
+            </p>
+            {entry.comment && (
+              <p className="mt-1">
+                <span className="font-semibold">Comment:</span> {entry.comment}
+              </p>
+            )}
+          </Card>
+        ))
+      )}
     </div>
-  );
-};
-
-export default FeedbackPage;
+  )
+}
