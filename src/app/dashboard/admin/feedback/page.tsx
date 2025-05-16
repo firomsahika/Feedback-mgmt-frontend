@@ -12,6 +12,7 @@ interface EnrichedFeedback {
   teacherName: string
   rating: number
   comment?: string
+  createdAt: Date
 }
 
 export default function ViewFeedbackPage() {
@@ -34,6 +35,7 @@ export default function ViewFeedbackPage() {
           teacherName: item.parameter?.teacherName || "N/A",
           rating: item.rating,
           comment: item.comment || "",
+          createdAt:item.createdAt,
         }))
 
         setFeedbackData(enriched)
@@ -57,15 +59,23 @@ export default function ViewFeedbackPage() {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">View Submitted Feedback</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        View Submitted Feedback
+      </h1>
       {feedbackData.length === 0 ? (
         <p className="text-center text-gray-500">No feedback found.</p>
       ) : (
         feedbackData.map((entry) => (
           <Card key={entry.id} className="mb-4 p-4 border shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-800">{entry.parameterName}</h2>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800">
+                {entry.parameterName}
+              </h2>
+              <p>{entry.createdAt}</p>
+            </div>
             <p className="text-sm text-gray-500">
-              Type: {entry.parameterType} | Course: {entry.courseName} | Teacher: {entry.teacherName}
+              Type: {entry.parameterType} | Course: {entry.courseName} |
+              Teacher: {entry.teacherName}
             </p>
             <p className="mt-2">
               <span className="font-semibold">Rating:</span> {entry.rating}/5
@@ -79,5 +89,5 @@ export default function ViewFeedbackPage() {
         ))
       )}
     </div>
-  )
+  );
 }

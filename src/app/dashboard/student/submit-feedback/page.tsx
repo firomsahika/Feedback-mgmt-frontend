@@ -30,7 +30,7 @@
         try {
           const response = await axios.get("http://localhost:5000/api/feedback/parameters")
           // Only keep the first 4 parameters
-          setParameters(response.data.slice(0, 4))
+          setParameters(response.data)
         } catch (error) {
           console.error("Failed to fetch parameters", error)
           toast.error("Error loading questions", {
