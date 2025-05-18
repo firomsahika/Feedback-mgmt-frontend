@@ -75,7 +75,7 @@
             
             </div>
 
-            <button className='bg-cyan-800 px-5 py-2 rounded-md w-full  text-white'
+            <button className='bg-blue-600 px-5 py-2 rounded-md w-full  text-white'
             onClick={handleSubmit}
             >Login</button>
             <div className='flex flex-col gap-y-2 items-center justify-center'>
