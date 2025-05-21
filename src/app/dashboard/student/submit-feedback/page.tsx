@@ -59,72 +59,149 @@
 
     const totalSteps = parameters.length
 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault()
-      setSubmitting(true)
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //   e.preventDefault()
+    //   setSubmitting(true)
 
-      const currentParameter = parameters[currentStep]
+    //   const currentParameter = parameters[currentStep]
+
+    //   if (!currentParameter) {
+    //     console.warn("No currentParameter found for currentStep:", currentStep)
+    //     setSubmitting(false)
+    //     return
+    //   }
+
+    //   const parameterId = currentParameter.id
+
+    //   console.log("Parameter ID: ", parameterId)
+
+    //     // 👉 Only submit if it's the last step
+    //     if (currentStep !== totalSteps - 1) {
+    //     nextStep()
+    //     return
+    //   }
+
+    //   try {
+
+    //     const token = localStorage.getItem("token");
+
+    //     console.log("Token :", token)
+
+    //     const allFeedback = parameters.map((param) =>({
+    //       parameterId:param.id,
+    //       rating: Number(feedback[`param_${param.id}`]),
+    //       comment:feedback[`param_${param.id}_comment`]
+    //     }))
+
+    //     // console.log("feedback", feedback)
+    //     console.log("ALl feedback: ", allFeedback);
+
+
+    //     const res = await axios.post(`http://localhost:5000/api/feedback/submit-feedback`, 
+    //       { feedback:allFeedback  }
+    //       , {
+    //       headers:{
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${token}`
+    //       }
+    //     })
+    //     toast.success("Feedback submitted successfully!", {
+    //       description: "Thank you for your valuable input.",
+    //     })
+
+    //     console.log("Submitted feedaback:", res.data )
+
+    //     if (currentStep === totalSteps - 1) {
+    //       // After final step
+    //       setFeedback({})
+    //       setCurrentStep(0)
+    //     } else {
+    //       nextStep()
+    //     }
+    //   } catch (error) {
+    //     console.error("Error submitting feedback:", error)
+    //     toast.error("Submission failed", {
+    //       description: "Please try again. If the problem persists, contact support.",
+    //     })
+    //   } finally {
+    //     setSubmitting(false)
+    //   }
+    // }
+
+
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setSubmitting(true);
+
+      const currentParameter = parameters[currentStep];
 
       if (!currentParameter) {
-        console.warn("No currentParameter found for currentStep:", currentStep)
-        setSubmitting(false)
-        return
+        console.warn("No currentParameter found for currentStep:", currentStep);
+        setSubmitting(false);
+        return;
       }
 
-      const parameterId = currentParameter.id
+      const token = localStorage.getItem("token");
 
-      console.log("Parameter ID: ", parameterId)
+      const rating = Number(feedback[`param_${currentParameter.id}`]);
+      const comment = feedback[`param_${currentParameter.id}_comment`] || "";
 
-        // 👉 Only submit if it's the last step
-        if (currentStep !== totalSteps - 1) {
-        nextStep()
-        return
+      // Validate rating
+      if (isNaN(rating) || rating < 1) {
+        toast.error("Please provide a valid rating before submitting.");
+        setSubmitting(false);
+        return;
       }
 
       try {
-
-        const token = localStorage.getItem("token");
-
-        console.log("Token :", token)
-
-        const allFeedback = parameters.map((param) =>({
-          parameterId:param.id,
-          rating: Number(feedback[`param_${param.id}`]),
-          comment:feedback[`param_${param.id}_comment`]
-        }))
-
-        console.log("feedback", feedback)
-
-        const res = await axios.post(`http://localhost:5000/api/feedback/submit-feedback`, 
-          { feedback:allFeedback  }
-          , {
-          headers:{
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+        // Submit only current parameter feedback
+        const res = await axios.post(
+          "http://localhost:5000/api/feedback/submit-feedback",
+          {
+            feedback: [
+              {
+                parameterId: currentParameter.id,
+                rating,
+                comment,
+              },
+            ],
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           }
-        })
+        );
+
         toast.success("Feedback submitted successfully!", {
           description: "Thank you for your valuable input.",
-        })
+        });
 
-        console.log("Submitted feedaback:", res.data )
+        console.log("Submitted feedback:", res.data);
 
-        if (currentStep === totalSteps - 1) {
-          // After final step
-          setFeedback({})
-          setCurrentStep(0)
+        // Move to next step if exists
+        if (currentStep < parameters.length - 1) {
+          setCurrentStep(currentStep + 1);
+          window.scrollTo({ top: 0, behavior: "smooth" });
         } else {
-          nextStep()
+          // Reset feedback after last submission
+          setFeedback({});
+          setCurrentStep(0);
         }
       } catch (error) {
-        console.error("Error submitting feedback:", error)
+        console.error("Error submitting feedback:", error);
         toast.error("Submission failed", {
-          description: "Please try again. If the problem persists, contact support.",
-        })
+          description:
+            "Please try again. If the problem persists, contact support.",
+        });
       } finally {
-        setSubmitting(false)
+        setSubmitting(false);
       }
-    }
+    };
+    
+
+    
 
     const nextStep = () => {
       if (currentStep < totalSteps - 1) {
@@ -201,3 +278,5 @@
       </div>
     )
   }
+
+
