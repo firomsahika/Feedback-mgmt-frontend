@@ -4,6 +4,7 @@
   import { useState, useEffect } from "react"
   import axios from "axios"
   import { toast } from "sonner"
+  import { useFeedbackStore } from "@/store/feedbackStore"
 
   import { ProgressBar } from "@/components/feedback/progress-bar"
   import { QuestionCard } from "@/components/feedback/question-card"
@@ -20,29 +21,37 @@
 
   export default function FeedbackPage() {
     const [feedback, setFeedback] = useState<Record<string, string | number>>({})
-    const [parameters, setParameters] = useState<Parameter[]>([])
-    const [loading, setLoading] = useState(true)
+    // const [parameters, setParameters] = useState<Parameter[]>([])
+    // const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [currentStep, setCurrentStep] = useState(0)
 
-    useEffect(() => {
-      const fetchParameters = async () => {
-        try {
-          const response = await axios.get("http://localhost:5000/api/feedback/parameters")
-          // Only keep the first 4 parameters
-          setParameters(response.data)
-        } catch (error) {
-          console.error("Failed to fetch parameters", error)
-          toast.error("Error loading questions", {
-            description: "Please refresh the page to try again.",
-          })
-        } finally {
-          setLoading(false)
-        }
-      }
+    // useEffect(() => {
+    //   const fetchParameters = async () => {
+    //     try {
+    //       const response = await axios.get("http://localhost:5000/api/feedback/parameters")
+    //       // Only keep the first 4 parameters
+    //       setParameters(response.data)
+    //     } catch (error) {
+    //       console.error("Failed to fetch parameters", error)
+    //       toast.error("Error loading questions", {
+    //         description: "Please refresh the page to try again.",
+    //       })
+    //     } finally {
+    //       setLoading(false)
+    //     }
+    //   }
 
-      fetchParameters()
-    }, [])
+    //   fetchParameters()
+    // }, [])
+
+    const {parameters, loading, fetchData} = useFeedbackStore();
+
+    useEffect(() => {
+       if(parameters.length === 0){
+        fetchData()
+       }
+    }, [parameters.length, fetchData])
 
     const handleChange = (name: string, value: string | number) => {
       setFeedback((prev) => ({ ...prev, [name]: value }))
