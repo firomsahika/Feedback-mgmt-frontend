@@ -44,6 +44,22 @@ const NotificationPage: React.FC = () => {
                     </p>
                     <p className="text-xs text-gray-500 mt-2">
                       Type: {param.parameterType}
+                    </p>{" "}
+                    <p className="mt-2">
+                      <a
+                        href="/feedback"
+                        className="underline text-blue-800 hover:text-blue-900"
+                      >
+                        Go to Feedback Form
+                      </a>
+                    </p>
+                    <p className="mt-2">
+                      <a
+                        href="/feedback"
+                        className="underline text-blue-800 hover:text-blue-900"
+                      >
+                        Go to Feedback Form
+                      </a>
                     </p>
                   </div>
                 ))

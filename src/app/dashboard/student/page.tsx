@@ -1,110 +1,88 @@
+// pages/view-feedback.tsx (example)
 "use client";
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link"; // Adjust the import based on your routing library
+import React, { useEffect } from "react";
+import { useSubmittedFeedbackStore } from "../../../store/submittedFeedbackStore";
+import { LoadingState } from "@/components/feedback/loading-state"; // Re-use loading component if desired
 
+export default function ViewFeedbackPage() {
+  
+  const { submittedFeedbacks, loading, error, fetchSubmittedFeedback } = useSubmittedFeedbackStore();
 
-const Home = () => {
+  useEffect(() => {
+    // Fetch submitted feedback when this page loads
+    if (submittedFeedbacks.length === 0 && !loading) {
+      fetchSubmittedFeedback();
+    }
+  }, [submittedFeedbacks.length, loading, fetchSubmittedFeedback]);
+
+  if (loading) {
+    return <LoadingState />; // Or a simpler loading spinner
+  }
+
+  if (error) {
+    return <div className="text-center py-20 text-red-600">Error: {error}</div>;
+  }
+
   return (
-    <div className="space-y-6">
-      {/* Welcome message */}
-      <div className="text-2xl font-bold">
-        Welcome back, Phyro! 👋
-      </div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Feedbacks Submitted</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">5</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Pending Feedbacks</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">2</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Next Deadline</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-lg">April 30, 2025</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Notifications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">3</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Feedbacks */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Recent Feedbacks</h2>
-        <div className="overflow-x-auto rounded-md shadow">
-          <table className="min-w-full text-sm text-left">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-4">Course</th>
-                <th className="p-4">Feedback Date</th>
-                <th className="p-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white">
-              <tr className="border-t">
-                <td className="p-4">Software Engineering</td>
-                <td className="p-4">March 20, 2025</td>
-                <td className="p-4">Submitted</td>
-              </tr>
-              <tr className="border-t">
-                <td className="p-4">Database Systems</td>
-                <td className="p-4">March 18, 2025</td>
-                <td className="p-4">Submitted</td>
-              </tr>
-              <tr className="border-t">
-                <td className="p-4">Data Structures</td>
-                <td className="p-4">March 15, 2025</td>
-                <td className="p-4">Pending</td>
-              </tr>
-            </tbody>
-          </table>
+    <div className="h-[calc(100vh-4rem)] bg-gray-50 py-5 px-4 sm:px-6 overflow-y-auto">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-2">
+            My Submitted Feedback
+          </h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Here you can review all the feedback you have submitted.
+          </p>
         </div>
-      </div>
 
-      {/* Announcements */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Latest Announcements</h2>
-        <ul className="list-disc list-inside space-y-2">
-          <li>Semester 2 feedback deadline is approaching!</li>
-          <li>Submit your feedback for new courses before April 30th.</li>
-        </ul>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex space-x-4">
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
-         <Link href="/dashboard/student/submit-feedback">Submit New Feedback</Link>
-        </button>
-        <button className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md">
-        <Link href="/dashboard/student/view-feedback">View All Feedbacks</Link>
-        </button>
+        {submittedFeedbacks.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-lg shadow-sm">
+            <p className="text-lg text-gray-600">
+              You haven't submitted any feedback yet.
+            </p>
+            <p className="text-md text-gray-500 mt-2">
+              <a href="/feedback" className="text-blue-600 hover:underline">
+                Go to the feedback form
+              </a>{" "}
+              to start.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {submittedFeedbacks.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white p-6 rounded-lg shadow-sm border border-gray-200"
+              >
+                <p className="text-lg font-semibold text-gray-800">
+                  Question:{" "}
+                  <span className="font-normal">
+                    {item.parameter.parameterName}
+                  </span>
+                </p>
+                <p className="text-md text-gray-700 mt-2">
+                  Rating: <span className="font-medium">{item.rating}/5</span>
+                </p>
+                {item.comment && (
+                  <p className="text-md text-gray-700 mt-2">
+                    Comment: <span className="italic">{item.comment}</span>
+                  </p>
+                )}
+                <p className="text-sm text-gray-500 mt-3">
+                  Submitted On:{" "}
+                  {new Date(item.submittedAt).toLocaleDateString()} at{" "}
+                  {new Date(item.submittedAt).toLocaleTimeString()}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Course: {item.parameter.courseName || "N/A"} | Teacher:{" "}
+                  {item.parameter.teacherName || "N/A"}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
-};
-
-export default Home;
+}
