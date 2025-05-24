@@ -2,44 +2,48 @@
 
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { useSubmittedFeedbackStore } from "@/store/feedbackStore";
-
+import { useSubmittedFeedbackStore } from "@/store/submittedFeedbackStore";
+import { LoadingState } from "@/components/feedback/loading-state";
 
 export default function ViewFeedbackPage() {
-  const { submittedFeedbackData, loading, fetchSubmittedFeedback } = useSubmittedFeedbackStore();
+  const { submittedFeedbacks, loading,error, fetchSubmittedFeedback } = useSubmittedFeedbackStore();
 
-  useEffect(() => {
-    fetchSubmittedFeedback();
-  }, [fetchSubmittedFeedback]);
+ useEffect(() => { 
+    // Fetch submitted feedback when this page loads
+    if (submittedFeedbacks.length === 0 && !loading) {
+      fetchSubmittedFeedback();
+    }
+  }, [submittedFeedbacks.length, loading, fetchSubmittedFeedback]);
 
   if (loading) {
-    return (
-      <div className="max-w-4xl mx-auto py-10 px-4 space-y-4">
-        <p className="text-gray-600 text-center">Loading feedback...</p>
-      </div>
-    );
+    return <LoadingState />; // Or a simpler loading spinner
   }
 
+  if (error) {
+    return <div className="text-center py-20 text-red-600">Error: {error}</div>;
+  }
+
+  console.log("submitted feedbacks format", submittedFeedbacks)
   
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold mb-6 text-center">
         View Submitted Feedback
       </h1>
-      {submittedFeedbackData.length === 0 ? (
+      {submittedFeedbacks.length === 0 ? (
         <p className="text-center text-gray-500">No feedback found.</p>
       ) : (
-        submittedFeedbackData.map((entry) => (
+        submittedFeedbacks.map((entry) => (
           <Card key={entry.id} className="mb-4 p-4 border shadow-sm">
             <div>
               <h2 className="text-lg font-semibold text-gray-800">
-                {entry.parameterName}
+                {entry.parameter.parameterName}
               </h2>
-              <p>{new Date(entry.createdAt).toLocaleString()}</p>
+              <p>{entry.submittedAt}</p>
             </div>
             <p className="text-sm text-gray-500">
-              Type: {entry.parameterType} | Course: {entry.courseName} |
-              Teacher: {entry.teacherName}
+              Type: {entry.parameter.parameterType} | Course: {entry.parameter.courseName} |
+              Teacher: {entry.parameter.teacherName}
             </p>
             <p className="mt-2">
               <span className="font-semibold">Rating:</span> {entry.rating}/5

@@ -51,7 +51,7 @@ const AddSubject = () => {
 
        const token = localStorage.getItem("token");
 
-         const res = await axios.post("http://localhost:5000/api/feedback/create-parameter", {
+         const res = await axios.post("http://localhost:5001/api/feedback/create-parameter", {
          parameterName: formData.parameterName,
          parameterType: formData.parameterType,
          courseName: formData.courseName,

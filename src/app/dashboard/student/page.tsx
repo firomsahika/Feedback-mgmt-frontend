@@ -2,14 +2,14 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useSubmittedFeedbackStore } from "../../../store/submittedFeedbackStore";
 import { LoadingState } from "@/components/feedback/loading-state"; // Re-use loading component if desired
+import { useSubmittedFeedbackStore } from "@/store/submittedFeedbackStore";
 
 export default function ViewFeedbackPage() {
-  
+
   const { submittedFeedbacks, loading, error, fetchSubmittedFeedback } = useSubmittedFeedbackStore();
 
-  useEffect(() => {
+  useEffect(() => { 
     // Fetch submitted feedback when this page loads
     if (submittedFeedbacks.length === 0 && !loading) {
       fetchSubmittedFeedback();

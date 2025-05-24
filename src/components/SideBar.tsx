@@ -68,7 +68,7 @@ export function SideBar() {
   const items = user?.role === "admin" ? adminItems : studentItems;
 
   return (
-    <aside className="h-full w-64 bg-blue-500 border-r shadow-sm">
+    <aside className="h-full w-64 bg-slate-700 border-r shadow-sm">
       <nav className="flex flex-col p-4 space-y-1">
         {items.map((item, index) => {
           const isActive = pathname === item.url;
@@ -81,7 +81,7 @@ export function SideBar() {
               href={item.url}
               className={`relative flex items-center space-x-3 p-2 rounded-md transition-colors ${
                 isActive
-                  ? "bg-slate-800 text-white shadow-2xl"
+                  ? "bg-blue-600 text-white shadow-2xl"
                   : "hover:bg-cyan-500 text-white"
               }`}
             >

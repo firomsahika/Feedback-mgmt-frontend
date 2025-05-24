@@ -17,6 +17,7 @@ interface SubmittedFeedbackItem {
     parameterType: string;
     courseName: string;
     teacherName: string;
+    
   };
 }
 
@@ -43,7 +44,7 @@ export const useSubmittedFeedbackStore = create<SubmittedFeedbackStore>((set) =>
         return;
       }
 
-      const response = await axios.get('http://localhost:5000/api/feedback/view-feedback', {
+      const response = await axios.get('http://localhost:5001/api/feedback/all', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -51,11 +52,6 @@ export const useSubmittedFeedbackStore = create<SubmittedFeedbackStore>((set) =>
       set({ submittedFeedbacks: response.data.data, loading: false }); // Access .data.data as your backend sends { data: [...] }
     } catch (error) {
       console.error('Failed to fetch submitted feedback', error);
-      const errorMessage = axios.isAxiosError(error) && error.response?.data?.message
-        ? error.response.data.message
-        : 'Error loading submitted feedback. Please try again.';
-      toast.error(errorMessage);
-      set({ error: errorMessage, loading: false });
     }
   },
   clearSubmittedFeedback: () => set({ submittedFeedbacks: [] }),

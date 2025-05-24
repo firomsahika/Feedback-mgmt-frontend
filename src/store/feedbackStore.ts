@@ -34,7 +34,7 @@ export const useFeedbackStore = create<FeedbackStore>((set) => ({
       }
 
       // This endpoint now fetches only UNsubmitted parameters for the current user
-      const response = await axios.get("http://localhost:5000/api/feedback/parameters", {
+      const response = await axios.get("http://localhost:5001/api/feedback/parameters", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -42,11 +42,7 @@ export const useFeedbackStore = create<FeedbackStore>((set) => ({
       set({ parameters: response.data, loading: false });
     } catch (error) {
       console.error("Failed to fetch parameters", error);
-      const errorMessage = axios.isAxiosError(error) && error.response?.data?.message
-        ? error.response.data.message
-        : "Error loading questions. Please refresh the page to try again.";
-      toast.error(errorMessage);
-      set({ error: errorMessage, loading: false });
+      
     }
   },
   resetParameters: () => set({ parameters: [] }),

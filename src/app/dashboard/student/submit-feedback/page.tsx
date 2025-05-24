@@ -1,178 +1,83 @@
-// FeedbackPage.tsx
 "use client";
 
-import type React from "react";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { toast } from "sonner";
-import { useFeedbackStore } from "@/store/feedbackStore"; // For unsubmitted parameters
-import { useSubmittedFeedbackStore } from "@/store/submittedFeedbackStore"; // For submitted feedback
-
+import React, { useEffect, useState } from "react";
+import { useFeedbackStore } from "@/store/feedbackStore";
 import { QuestionCard } from "@/components/feedback/question-card";
-import { LoadingState } from "@/components/feedback/loading-state";
+import { toast } from "sonner";
+import axios from "axios";
 
+const FeedbackPage = () => {
+  const { parameters, loading, fetchData } = useFeedbackStore();
 
-interface Parameter {
-  id: number;
-  parameterName: string;
-  parameterType: string;
-  courseName: string;
-  teacherName: string;
-}
-
-export default function FeedbackPage() {
-  // `feedback` state now holds all answers for all questions on the page
+  // Flat feedback structure
   const [feedback, setFeedback] = useState<Record<string, string | number>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Get unsubmitted parameters from the feedback store
-  const { parameters, loading, fetchData, resetParameters } =
-    useFeedbackStore();
-
-  // Get fetch function for submitted feedback from the new store
-  const { fetchSubmittedFeedback } = useSubmittedFeedbackStore();
-
   useEffect(() => {
-    // Only fetch unsubmitted parameters if they are empty and not currently loading
-    if (parameters.length === 0 && !loading) {
-      fetchData();
-    }
-    // Also, fetch submitted feedback when the page loads, to populate the other store
-    fetchSubmittedFeedback();
-  }, [parameters.length, loading, fetchData, fetchSubmittedFeedback]);
+    fetchData();
+  }, []);
 
+  // New handleChange for flat structure
   const handleChange = (name: string, value: string | number) => {
-    setFeedback((prev) => ({ ...prev, [name]: value }));
+    setFeedback((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
 
-    // --- Validate all questions before submission ---
-    // This part is crucial for single-page forms
-    const feedbackToSubmit: {
-      parameterId: number;
-      rating: number;
-      comment: string;
-    }[] = [];
-    let isValid = true;
-    let missingQuestions: string[] = [];
-
-    parameters.forEach((param) => {
-      const rating = Number(feedback[`param_${param.id}`]);
-      const comment = String(feedback[`param_${param.id}_comment`] || ""); 
-      
-      if (isNaN(rating) || rating < 1 || rating > 5) {
-        isValid = false;
-        missingQuestions.push(param.parameterName); // Collect names of missing questions
-      } else {
-        feedbackToSubmit.push({
-          parameterId: param.id,
-          rating,
-          comment,
-        });
-      }
+    const feedbackArray = parameters.map((param) => {
+      const rating = feedback[`param_${param.id}`] || 0;
+      const comment = feedback[`param_${param.id}_comment`] || "";
+      return {
+        parameterId: param.id,
+        rating: Number(rating),
+        comment: String(comment),
+      };
     });
 
+    // Validation
+    const isValid = feedbackArray.every(
+      (item) => item.rating >= 1 && item.rating <= 5
+    );
+
     if (!isValid) {
-      toast.error("Please answer all questions before submitting.", {
-        description: `Missing ratings for: ${missingQuestions.join(", ")}`,
-        duration: 5000, // Keep the toast visible longer to read all missing questions
-      });
-      setSubmitting(false);
+      toast.error("Please provide a rating (1-5) for all questions.");
       return;
     }
+    
+    const token = localStorage.getItem("token");
+    console.log("token", token)
 
-    // If there are no questions to submit (e.g., all feedback given)
-    if (feedbackToSubmit.length === 0) {
-      toast.info("No new feedback to submit.", {
-        description: "You have already completed all available feedback forms.",
-      });
-      setSubmitting(false);
-      return;
-    }
-
-    // --- Proceed with submission ---
     try {
-      const token = localStorage.getItem("token");
+      setSubmitting(true);
 
-      if (!token) {
-        toast.error(
-          "Authentication error: No token found. Please log in again."
-        );
-        setSubmitting(false);
-        return;
-      }
-
-      console.log("Submitting ALL feedback:", feedbackToSubmit);
-
-      const res = await axios.post(
-        "http://localhost:5000/api/feedback/submit-feedback",
-        { feedback: feedbackToSubmit }, // Send the array of all feedback items
+      const res = await axios.post("http://localhost:5001/api/feedback/submit-feedback",
+         { feedback:feedbackArray },
         {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+        headers:{
+          Authorization: `Bearer ${token}`
         }
-      );
+      })
 
-      toast.success("Feedback submitted successfully!", {
-        description: "Thank you for your valuable input.",
-      });
+      const result = res.data;
+      console.log("Submitted feedback", result);
 
-      console.log("Submitted feedback:", res.data);
-
-      // --- Crucial Post-Submission Actions ---
-      setFeedback({}); // Clear current form data
-      // No currentStep to reset
-      resetParameters(); // Clear the unsubmitted parameters from the store
-
-      // Trigger re-fetch for BOTH stores to get the latest state
-      await fetchData(); // Fetches new set of UNsubmitted parameters (will be fewer or empty)
-      await fetchSubmittedFeedback(); // Fetches updated list of SUBMITTED feedback
-    } catch (error: any) {
-      console.error("Error submitting feedback:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
-        if (
-          error.response.status === 400 &&
-          error.response.data.message ===
-            "Oops, You have already submitted this feedback!!"
-        ) {
-          toast.info("Feedback already submitted", {
-            description:
-              "You have already completed this set of feedback questions.",
-          });
-          // Even if already submitted, refresh states to ensure UI is consistent
-          setFeedback({});
-          resetParameters();
-          await fetchData();
-          await fetchSubmittedFeedback(); // Make sure submitted list is also up-to-date
-        } else {
-          toast.error("Submission failed", {
-            description:
-              "Please try again. If the problem persists, contact support.",
-          });
-        }
+      if (!result) {
+        toast.error(result.message || "Something went wrong.");
       } else {
-        toast.error("An unexpected error occurred", {
-          description: "Please try again.",
-        });
+        toast.success(result.message || "Feedback submitted successfully!");
+        // Optionally reset feedback
+        setFeedback({});
       }
+    } catch (error) {
+      toast.error("Failed to submit feedback.");
     } finally {
       setSubmitting(false);
     }
   };
-
-  // The `renderStepContent` logic is no longer needed, we'll render directly
-  // The `isNextDisabled`, `nextStep`, `prevStep` functions are also removed.
-
-  if (loading) {
-    return <LoadingState />;
-  }
 
   return (
     <div className="h-[calc(100vh-4rem)] bg-gray-50 py-5 px-4 sm:px-6 overflow-y-auto">
@@ -187,11 +92,8 @@ export default function FeedbackPage() {
           </p>
         </div>
 
-        {/* No ProgressBar needed for a single page */}
-
         <form onSubmit={handleSubmit} className="mt-8">
           {parameters.length === 0 && !loading ? (
-            // Display message if no questions are available
             <div className="text-center py-20 bg-white rounded-lg shadow-sm">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">
                 No New Feedback Questions Available
@@ -205,15 +107,14 @@ export default function FeedbackPage() {
               </p>
             </div>
           ) : (
-            // Render all question cards if parameters exist
             <div className="space-y-8">
               {parameters.map((param, index) => (
                 <QuestionCard
-                  key={param.id} // Use parameter ID as key
+                  key={param.id}
                   parameter={param}
                   feedback={feedback}
                   handleChange={handleChange}
-                  stepNumber={index + 1} // Keep stepNumber for display clarity
+                  stepNumber={index + 1}
                 />
               ))}
             </div>
@@ -241,4 +142,6 @@ export default function FeedbackPage() {
       </div>
     </div>
   );
-}
+};
+
+export default FeedbackPage;
